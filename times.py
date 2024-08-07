@@ -25,11 +25,20 @@ class Time:
 
     def listar_jogadores(self) -> None:
         """Lista os jogadores do time."""
+        print()
         print(f'Lista de Jogadores do {self.nome}:')
         for jogador in self.jogadores:
-            print('-', jogador.nome)
+            print(f'- {jogador.nome} | {jogador.posicao}')
+        print()
 
     def total_gols(self) -> None:
         """Exibe o total de gols do time."""
         for jogador in self.jogadores:
             print(jogador.gols)
+
+    def somar_pontos(self, pontos) -> None:
+        self.pontos += pontos
+
+    def retornar_pontos(self) -> int:
+        print(f'Retornando pontos: {self.pontos}')
+        return self.pontos

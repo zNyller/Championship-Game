@@ -34,10 +34,11 @@ class Partida:
         print(f'Vencedor: {self.vencedor.nome}') if self.vencedor else print('Empate!')
     
     def pontuacao(self):
+        """Registra e exibe a pontuação da partida -> Vencedor [3pts] | Empate [1pt]"""
         if self.vencedor:
-            print(f'{self.vencedor.nome} recebe 3 pontos!')
-            self.vencedor.pontos += 3
+            print(f'{self.vencedor.nome} somou 3 pontos!')
+            self.vencedor.somar_pontos(3)
         else:
             print('As duas equipes somaram 1 ponto!')
-            self.time1.pontos += 1
-            self.tim2.pontos += 1
+            self.time1.somar_pontos(1)
+            self.time2.somar_pontos(1)

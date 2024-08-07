@@ -1,50 +1,92 @@
+from random import randint
 from jogador import Jogador
 from times import Time
 from partida import Partida
 from campeonato import Campeonato
 
 
-def main():
-    while True:
-        jogador_nome = input('Crie um jogador! \nNome: ')
-        jogador_posicao = input('Posição: ')
-        print('\nJogador criado!\n')
-        jogador2_nome = input('Crie outro jogador! \nNome: ')
-        jogador2_posicao = input('Posição: ')
-        time1 = input('\nCrie um time!\nNome: ')
-        time2 = input('\nCrie outro time!\nNome: ')
-        continuar = input('Continuar? ').upper()
-        if continuar != 'S':
-            break
+class Brasileirao:
+    """Classe principal. Gerencia os times e as partidas do campeonato."""
 
-    jogador1 = Jogador(jogador_nome, jogador_posicao)
-    time1 = Time(time1)
-    time1.contratar_jogador(jogador1)
-    time1.listar_jogadores()
-    jogador1.marcar_gol()
-    jogador1.estatisticas()
+    CLUBES = [
+        'Athletico-PR', 'Atlético-GO', 'Atlético-MG', 'Bahia', 'Botafogo',
+        'Corinthians', 'Criciúma', 'Cruzeiro', 'Cuiabá', 'Flamengo',
+        'Fluminense', 'Fortaleza', 'Grêmio', 'Internacional', 'Juventude',
+        'Palmeiras', 'RB Bragantino', 'São Paulo', 'Vasco', 'Vitória'
+    ]
+    JOGADORES = {
+        'Anthoni': 'GK', 'Fabrício': 'GK', 'Ivan': 'GK', 'Rochet': 'GK',
+        'Gabriel Mercado': 'ZAG', 'Igor Gomes': 'ZAG', 'Robert Renan': 'ZAG', 'Vitão': 'ZAG',
+        'Bustos': 'LD', 'Bernabei': 'LE', 'Renê': 'LE',
+        'Bruno Gomes': 'VOL', 'Rômulo': 'VOL', 'Fernando': 'VOL', 
+        'Bruno Henrique': 'MLG', 'Hyoran': 'MLG', 'Thiago Maia': 'MLG',
+        'Gabriel Carvalho': 'MAT', 'Alan Patrick': 'MAT', 
+        'Gustavo Prado': 'PE', 'Wanderson': 'PE', 'Wesley': 'PD',
+        'Enner Valência': 'CA', 'Lucas Alário': 'CA', 'Lucca': 'CA', 'Rafael Borré': 'CA', 
+    }
 
-    print()
+    def __init__(self) -> None:
+        self.meu_clube = None
+        self.clubes = self.CLUBES
+        self.meus_jogadores = self.JOGADORES
+        self.campeonato = Campeonato()
 
-    jogador2 = Jogador(jogador2_nome, jogador2_posicao)
-    time2 = Time(time2)
-    time2.contratar_jogador(jogador2)
-    time2.listar_jogadores()
-    jogador2.estatisticas()
+    def _menu(self) -> None:
+        """Exibe o menu para iniciar o jogo."""
+        print(f'Lista de times do Brasileirão Série A:')
+        self.campeonato.classificacao(label=False)
 
-    print()
+    def _escolher_time(self):
+        """Exibe a opção para o usuário escolher uma equipe."""
+        while True:
+            meu_time = input('Qual time você deseja coordenar? ')
+            if meu_time in self.clubes:
+                print(f'\nVocê irá coordenar o {meu_time}!')
+                self.meu_clube = Time(meu_time)
+                break
+            print('Time inexistente. Escolha novamente!')
+            continue
+        
+    def _contratar_jogadores(self):
+        if self.meu_clube.nome == 'Internacional':
+            for meu_jogador, pos in self.meus_jogadores.items():
+                jogador = Jogador(meu_jogador, pos)
+                self.meu_clube.contratar_jogador(jogador)
+        else:
+            while True:
+                print('Crie os jogadores para o seu time! [0] para encerrar: ')
+                nome = input('Nome: ')
+                if nome == '0':
+                    break
+                posicao = input('Posição: ')
+                jogador = Jogador(nome, posicao)
+                self.meu_clube.contratar_jogador(jogador)
 
-    partida = Partida(time1, time2)
-    partida.resultado()
-    partida.pontuacao()
+    def _realizar_partida(self):
+        """Seleciona um adversário aleatório para jogar contra."""
+        sorteio_time = randint(0, 19)
+        self.adversario = self.campeonato.times[sorteio_time]
+        self.partida = Partida(self.meu_clube, self.adversario)
+        self.partida.resultado()
+        self.partida.pontuacao()
 
-    print()
+    def main(self) -> None:
+        """Loop principal do jogo."""
+        self._menu()
+        self._escolher_time()
+        self._contratar_jogadores()
+        self.meu_clube.listar_jogadores()
 
-    brasileirao = Campeonato()
-    brasileirao.adicionar_time(time1)
-    brasileirao.adicionar_time(time2)
-    brasileirao.registrar_partida(partida)
-    brasileirao.classificacao()
+        for clube in self.clubes:
+            self.campeonato.adicionar_time(clube)
+
+        self._realizar_partida()
+
+        print()
+
+        self.campeonato.registrar_partida(self.partida)
+        self.campeonato.classificacao()
 
 
-main()
+br = Brasileirao()
+br.main()
